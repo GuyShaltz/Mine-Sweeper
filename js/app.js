@@ -5,12 +5,12 @@ const MINE = '💣'
 
 var gBoard = []
 
-var cell = {
-    minesAroundCount: 4,
-    isShown: false,
-    isMine: false,
-    isMarked: true
-}
+// var cell = {
+//     minesAroundCount: 4,
+//     isShown: true,
+//     isMine: false,
+//     isMarked: true
+// }
 
 var gLevel = {
     SIZE: 4,
@@ -27,109 +27,138 @@ var gGame = {
 // ----FUNCTIONS:----
 function initGame() {
     gBoard = buildBoard()
-    renderBoard(gBoard)
     console.log(gBoard);
+    renderBoard(gBoard)
 }
 
-
 function buildBoard() {
-    // -Builds the board
-    var board = []
-    var mines = gLevel.MINES
+    gBoard = firstBoard()
+    for (var i = 0; i < gBoard.length; i++) {
 
-    for (var i = 0; i < gLevel.SIZE; i++) {
-        board.push([])
-        for (var j = 0; j < gLevel.SIZE; j++) {
-            board[i][j] = cell
+        for (var j = 0; j < gBoard.length; j++) {
+            var cell = gBoard[i][j]
+            cell.minesAroundCount = setMinesNegsCount(i, j, gBoard)
         }
-        // Set mines at random locations
-
     }
-
-
-    return board
-    // Call setMinesNegsCount()
-    // Return the created board
+    return gBoard
 }
 
 function renderBoard(board) {
-    // Render the board as a <table> to the page
-    var elBoard = document.querySelector('.board')
+    // console.table(board)
     var strHTML = ''
     for (var i = 0; i < board.length; i++) {
         strHTML += '<tr>'
         for (var j = 0; j < board[0].length; j++) {
-            var currCell = board[i][j]
-            var value = (cell.isMine) ? MINE : ''
-            // var className = (currCell) ? 'occupied' : ''
-            var cellData = 'data-i="' + i + '" data-j="' + j + '"'
+            var cell = board[i][j]
+            var cellValue = ''
+            if (cell.isShown) {
+                cellValue = (cell.isMine) ? MINE : cell.minesAroundCount
 
-            strHTML += `<td ${cellData}
-          onclick="cellClicked(this,${i},${j})">
-          ${value}</td>`
+            }
+            strHTML += `<td id ${i}-${j} onclick="cellClicked(this,${i},${j})">
+            <span>${cellValue}</span></td >`
         }
         strHTML += '</tr>\n'
     }
     // console.log(strHTML)
+    var elBoard = document.querySelector('.board')
     elBoard.innerHTML = strHTML
-}
-
-function createCompareBoard() {
 
 }
 
-function createMinesArray() {
-    var minesArray = []
-    var minesCount = gLevel.MINES
-
-    for (var i = 0; i < gLevel.SIZE ** 2; i++) {
-        var value = (minesCount > 0) ? MINE : ''
-        minesArray.push(value)
-        minesCount--
+function setMinesNegsCount(cellI, cellJ, mat) {
+    var negsCount = 0
+    for (var i = cellI - 1; i <= cellI + 1; i++) {
+        if (i < 0 || i >= mat.length) continue
+        for (var j = cellJ - 1; j <= cellJ + 1; j++) {
+            if (i === cellI && j === cellJ) continue
+            if (j < 0 || j >= mat[i].length) continue
+            if (mat[i][j].isMine) negsCount++
+        }
     }
+    return negsCount
+
 }
 
-function drawNums(array) {
-    var idx = getRandomInt(0, array.length)
-    array.splice(idx, 1)
-    return
+function firstBoard() {
+    var board = []
+    for (var i = 0; i < gLevel.SIZE; i++) {
+        board.push([])
+        for (var j = 0; j < gLevel.SIZE; j++) {
+            board[i][j] = {
+                minesAroundCount: 4,
+                isShown: false,
+                isMine: false,
+                isMarked: true
+            }
+        }
+    }
+    var count = getRandomInt(1, gLevel.SIZE ** 2)
+    var idx = getRandMatIdx(count, gBoard)
+
+
+    board[1][1].isMine = true
+    board[2][3].isMine = true
+    return board
 }
 
+function cellClicked(elCell, i, j) {
+    var cell = gBoard[i][j]
+    var cellValue = ''
+    if (!cell.isShown) {
+        cell.isShown = true
+        if (!cell.isMine) {
+            if (cell.minesAroundCount !== 0) cellValue = cell.minesAroundCount
+        } else cellValue = MINE
+        if (!elCell.classList.contains('shown')) elCell.classList.add('shown')
+        renderCell(elCell, cellValue)
+    } return
+}
 
-// setMinesNegsCount(board)
-// Count mines around each cell
-// set the cell's minesAroundCount.
+function renderCell(elCell, value) {
+    var elSpan = elCell.querySelector('span')
+    elSpan.innerText = value
+}
+
+// console.log(getEmptyRandCell(gBoard));
+// function getEmptyRandCell(board) {
+//     var emptyCells = []
+//     for (var i = 0; i < board.length; i++) {
+
+//         for (var j = 0; j < board[0].length; j++) {
+//             var cell = { i: i, j: j }
+//             var currCell = board[i][j]
+
+//             emptyCells.push(cell)
 
 
-// cellClicked(elCell, i, j){
-// Called when a cell (td) is clicked
-
+//         }
+//         var randIdx = getRandomInt(0, 16)
+//     } return emptyCells[randIdx]
 // }
 
-// cellMarked(elCell)
-//Called on right click to mark a cell (suspected to be a mine)
-//Search the web how to hide the context menu on right click
 
-// checkGameOver()
-//Game ends :
-// 1- when all mines are marked,
-// 2- all the other cells are shown
-
-// expandShown(board, elCell, i, j)
-// start with a basic-only opens the non-mine 1st degree neighbors
-//When user clicks a cell with no mines around, we need to open that cell, but also its neighbors.
-
-// console.log(getEmptyCell());
-function getEmptyCell() {
-    var emptyCells = []
-    for (var i = 0; i < gBoard.length; i++) {
-        for (var j = 0; j < gBoard[0].length; j++) {
-            var cell = { i: i, j: j }
-            if (cell.isMine === false) emptyCells.push(cell)
+function getRandMatIdx(count, board) {
+    var counter = count
+    while (counter > 0) {
+        for (var i = 0; i < 4; i++) {
+            console.log(i);
+            for (var j = 0; j < 4; j++) {
+                console.log(j)
+                var idx = { i: i, j: j }
+                counter--
+            }
         }
     }
-    var randIdx = getRandomIntInclusive(0, emptyCells.length - 1)
-    return emptyCells[randIdx]
+    console.log(idx);
+    return idx
+
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
 }
 
 
@@ -138,27 +167,3 @@ function getEmptyCell() {
 
 
 
-
-
-
-
-
-
-
-
-// console.log(getEmptyCell(gBoard));
-function getEmptyRandCell(board) {
-    var emptyCells = []
-    for (var i = 0; i < board.length; i++) {
-
-        for (var j = 0; j < board.length; j++) {
-            var location = { i: i, j: j }
-            var currCell = board[i][j]
-            if (currCell.isMine === '') {
-                emptyCells.push(location)
-            }
-
-        }
-        var randIdx = getRandomInt(0, emptyCells.length)
-    } return emptyCells[randIdx]
-}
