@@ -5,11 +5,39 @@
     transition: 0.5s;
 }
 
+
 .board td:hover {
     background-color: lightsalmon;
 }
 
 .shown {
-    border: solid 2px;
+    border: solid 1px;
     background-color: aqua;
+}
+
+
+.main-table {
+    margin: auto;
+
+
+}
+
+.button {
+    margin-left: auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 30px;
+
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 0 5px 0 #000000bf;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s;
+
+
+}
+
+.level-btns {
+    text-align: center;
 }
