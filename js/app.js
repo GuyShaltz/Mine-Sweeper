@@ -2,15 +2,9 @@
 
 // ----global variables----
 const MINE = '💣'
+const FLAG = '🚩'
 
 var gBoard = []
-
-// var cell = {
-//     minesAroundCount: 4,
-//     isShown: true,
-//     isMine: false,
-//     isMarked: true
-// }
 
 var gLevel = {
     SIZE: 4,
@@ -93,12 +87,13 @@ function firstBoard() {
             }
         }
     }
-    var count = getRandomInt(1, gLevel.SIZE ** 2)
-    var idx = getRandMatIdx(count, gBoard)
+    for (var q = 0; q < gLevel.MINES; q++) {
+        var randCell = getRandomInt(0, gLevel.SIZE ** 2)
+        var randIdx = getRandMatIdx(randCell, board)
+        if (board[randIdx.i][randIdx.j].isMine) gLevel.MINES++
+        board[randIdx.i][randIdx.j].isMine = true
+    }
 
-
-    board[1][1].isMine = true
-    board[2][3].isMine = true
     return board
 }
 
@@ -138,20 +133,20 @@ function renderCell(elCell, value) {
 // }
 
 
-function getRandMatIdx(count, board) {
-    var counter = count
+function getRandMatIdx(randCellIdx, board) {
+    var counter = randCellIdx
     while (counter > 0) {
-        for (var i = 0; i < 4; i++) {
-            console.log(i);
-            for (var j = 0; j < 4; j++) {
-                console.log(j)
+        for (var i = 0; i < gLevel.SIZE; i++) {
+            for (var j = 0; j < gLevel.SIZE; j++) {
+
                 var idx = { i: i, j: j }
+
+                if (counter === 1) return idx
+
                 counter--
             }
         }
     }
-    console.log(idx);
-    return idx
 
 }
 
@@ -161,6 +156,28 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
+function timer() {
+    document.addEventListener('click', () => {
+        setInterval(timer, 1000);
+    }, { once: true });
+
+    //sec
+    var elSec = document.querySelector('.sec')
+    var currSec = elSec.innerText
+    currSec++
+    elSec.innerText = currSec
+    //min
+    var elMin = document.querySelector('.min')
+    var currMin = elMin.innerText
+    if (currSec > 60) {
+        currMin++
+        elMin.innerText = currMin
+        //need to reset the sec
+        currSec = 0
+        elSec.innerText = currSec
+    }
+
+}
 
 
 
