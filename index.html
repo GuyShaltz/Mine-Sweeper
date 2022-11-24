@@ -10,9 +10,13 @@
 </head>
 
 <body onload="initGame()">
-    <div><span class="sec">0</span>
-        <span class="min"></span>
+    <div>
+        <span class="min">0</span>
+        <span class="sec">0</span>
     </div>
+    <button class="button" onclick="setLevel('Beginner')">Beginner</button>
+    <button class="button" onclick="setLevel('Medium')">Medium</button>
+    <button class="button" onclick="setLevel('Advanced')">Advanced</button>
     <table border="1" cellpadding="10">
         <tbody class="board"></tbody>
     </table>

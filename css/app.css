@@ -8,3 +8,8 @@
 .board td:hover {
     background-color: lightsalmon;
 }
+
+.shown {
+    border: solid 2px;
+    background-color: aqua;
+}
